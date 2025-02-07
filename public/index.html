@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Message Sender</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Reset margin and padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Container styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        /* QR Code styling */
+        #qr-container {
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #4CAF50, #81C784);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        #qr-container h3 {
+            font-size: 22px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        #qr-code {
+            border: 5px solid #fff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 128, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        #qr-code:hover {
+            transform: scale(1.1);
+        }
+
+        /* Form container styling */
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap; /* Ensures responsive design */
+            margin-top: 20px;
+        }
+
+        .form-column {
+            width: 45%;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-column h3 {
+            font-size: 24px;
+            color: #388E3C;
+            margin-bottom: 20px;
+        }
+
+        /* Form styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input[type="text"],
+        textarea,
+        input[type="file"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        /* Submit button styling */
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Media query for smaller screens */
+        @media (max-width: 768px) {
+            .form-column {
+                width: 90%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WhatsApp Sender</h1>
+
+        <!-- QR Code Display -->
+        <div id="qr-container">
+            <h3>Scan this QR Code to connect:</h3>
+            <img id="qr-code" src="" alt="QR Code">
+        </div>
+
+        <!-- Message Form (Initially Hidden) -->
+        <div id="message-form" style="display: none;">
+            <!-- Layout for single message and bulk message forms -->
+            <div class="form-container">
+
+                <!-- Single Message Form -->
+                <div class="form-column">
+                    <h3>Send Single Message</h3>
+                    <form id="send-message-form">
+                        <input type="text" id="phone-number" placeholder="Phone Number" required><br><br>
+                        <textarea id="message" placeholder="Enter your message..." required></textarea><br><br>
+                        <label for="image-file">Upload Image (Optional, JPEG, PNG)</label><br>
+                        <input type="file" id="image-file" name="image" accept="image/*"><br><br> <!-- Upload image -->
+                        <button type="submit" id="send-single-message-btn" disabled>Send Message</button>
+                    </form>
+                </div>
+
+                <!-- Bulk Message (Excel File) Form -->
+                <div class="form-column">
+                    <h3>Send Bulk Messages from Excel</h3>
+                    <form id="send-bulk-form" enctype="multipart/form-data">
+                        <label for="excel-file">Upload Excel File (.xls, .xlsx)</label><br>
+                        <input type="file" id="excel-file" name="excel" accept=".xls,.xlsx" required><br><br>
+                        <!-- Removed the image upload field for bulk message -->
+                        <button type="submit" id="send-bulk-message-btn" disabled>Send Bulk Message</button>
+                    </form>
+                </div>
+
+            </div> <!-- End of form-container -->
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Example for dynamically updating QR code and toggling the form visibility once connected.
+        fetch('/qr')
+            .then(response => response.json())
+            .then(data => {
+                if (data.qr) {
+                    document.getElementById('qr-code').src = data.qr;
+                } else {
+                    // Show message form after QR scan and login
+                    document.getElementById('message-form').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching QR Code:", error);
+                document.getElementById('qr-container').innerHTML = "<h3>Failed to fetch QR Code. Please try again later.</h3>";
+            });
+
+        // Enable submit button based on input validation for single message form
+        document.getElementById('send-message-form').addEventListener('input', () => {
+            const phoneNumber = document.getElementById('phone-number').value;
+            const message = document.getElementById('message').value;
+            document.getElementById('send-single-message-btn').disabled = !(phoneNumber && message);
+        });
+
+        // Enable submit button based on file upload validation for bulk message form
+        document.getElementById('send-bulk-form').addEventListener('input', () => {
+            const excelFile = document.getElementById('excel-file').files.length > 0;
+            document.getElementById('send-bulk-message-btn').disabled = !excelFile;
+        });
+    </script>
+</body>
+</html>
