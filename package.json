@@ -1,0 +1,14 @@
+{
+  "name": "simplewablast",
+  "version": "1.0.0",
+  "description": "WhatsApp Reminder Bot",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "whatsapp-web.js": "^1.21.1",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
