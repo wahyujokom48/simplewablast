@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Blast & Message Sender</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .status-badge {
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background-color: #f0f0f0;
+            color: #555;
+            transition: all 0.3s ease;
+        }
+        .status-badge.connected {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-badge.disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-badge.qr {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        #qr-loading {
+            color: white;
+            font-size: 16px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        .result-box {
+            display: none;
+            padding: 15px;
+            margin: 20px auto;
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: left;
+            max-width: 90%;
+            white-space: pre-line;
+        }
+        .result-box.success {
+            display: block;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result-box.error {
+            display: block;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .helper-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: -8px;
+            margin-bottom: 12px;
+            text-align: left;
+            width: 100%;
+        }
+        .btn-loading {
+            opacity: 0.7;
+            cursor: wait !important;
+        }
+
+        /* Template Download Card */
+        .template-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #e8f5e9;
+            border: 1.5px dashed #4CAF50;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            text-align: left;
+            gap: 12px;
+        }
+        .template-info strong {
+            display: block;
+            color: #2e7d32;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        .template-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #555;
+        }
+        .btn-download-template {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 6px;
+            white-space: nowrap;
+            transition: background-color 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-download-template:hover {
+            background-color: #388E3C;
+        }
+
+        /* File Input Wrapper & Clear Buttons */
+        .file-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .file-wrapper input[type="file"] {
+            margin-bottom: 8px;
+        }
+        .preview-box {
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 14px;
+            gap: 12px;
+            text-align: left;
+        }
+        .preview-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            background: #fff;
+        }
+        .preview-details {
+            flex: 1;
+            overflow: hidden;
+        }
+        .preview-filename {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .preview-filesize {
+            font-size: 11px;
+            color: #777;
+        }
+        .btn-clear-media {
+            background: #ff4d4f;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.15s ease, background-color 0.15s ease;
+            flex-shrink: 0;
+            padding: 0;
+            line-height: 1;
+        }
+        .btn-clear-media:hover {
+            background: #d9363e;
+            transform: scale(1.1);
+        }
+        .btn-clear-media:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WhatsApp Blast Sender</h1>
+        
+        <div id="status-badge" class="status-badge">Menghubungkan ke WhatsApp...</div>
+
+        <!-- QR Code Container -->
+        <div id="qr-container">
+            <h3 id="qr-instruction">Menyiapkan sesi WhatsApp...</h3>
+            <div id="qr-loading">Sedang memuat browser WhatsApp Web, mohon tunggu...</div>
+            <img id="qr-code" src="" alt="WhatsApp QR Code" style="display: none; max-width: 260px; margin: 0 auto;">
+        </div>
+
+        <!-- Result Box -->
+        <div id="result-box" class="result-box"></div>
+
+        <!-- Message Form Container (Tampil setelah terhubung) -->
+        <div id="message-form" style="display: none;">
+            <div class="form-container">
+
+                <!-- Single Message Form -->
+                <div class="form-column">
+                    <h3>Kirim Pesan Tunggal</h3>
+                    <form id="send-message-form">
+                        <label for="phone-number">Nomor WhatsApp Penerima</label>
+                        <input type="text" id="phone-number" placeholder="Contoh: 08123456789 atau 628123456789" required>
+                        
+                        <label for="message">Isi Pesan</label>
+                        <textarea id="message" placeholder="Tuliskan pesan WhatsApp di sini..." required></textarea>
+                        
+                        <label for="image-file">Gambar Lampiran (Opsional)</label>
+                        <div class="file-wrapper">
+                            <input type="file" id="image-file" name="image" accept="image/jpeg,image/png,image/webp">
+                        </div>
+                        
+                        <!-- Preview Box Single Image -->
+                        <div id="single-image-preview-box" class="preview-box" style="display: none;">
+                            <img id="single-image-thumb" class="preview-thumb" src="" alt="Thumbnail">
+                            <div class="preview-details">
+                                <span id="single-image-name" class="preview-filename"></span>
+                                <span id="single-image-size" class="preview-filesize"></span>
+                            </div>
+                            <button type="button" id="clear-single-image-btn" class="btn-clear-media" title="Batal upload gambar (Hapus gambar)">✕</button>
+                        </div>
+
+                        <div class="helper-text">Format didukung: JPG, PNG, WEBP (Maks 10MB)</div>
+
+                        <button type="submit" id="send-single-message-btn">Kirim Pesan</button>
+                    </form>
+                </div>
+
+                <!-- Bulk Message (Excel File) Form -->
+                <div class="form-column">
+                    <h3>Kirim Massal (Blast Excel)</h3>
+
+                    <!-- Template Excel Download Card -->
+                    <div class="template-card">
+                        <div class="template-info">
+                            <strong>Template Excel Siap Pakai</strong>
+                            <p>Download format kolom PhoneNumber & Message</p>
+                        </div>
+                        <a href="/download-template" class="btn-download-template" download="template_blast.xlsx">
+                            📥 Download Template (.xlsx)
+                        </a>
+                    </div>
+
+                    <form id="send-bulk-form" enctype="multipart/form-data">
+                        <label for="excel-file">Upload File Excel (.xlsx, .xls)</label>
+                        <div class="file-wrapper">
+                            <input type="file" id="excel-file" name="excel" accept=".xls,.xlsx" required>
+                        </div>
+                        <!-- Preview Box Excel File -->
+                        <div id="excel-preview-box" class="preview-box" style="display: none;">
+                            <span style="font-size: 24px; margin-right: 6px;">📄</span>
+                            <div class="preview-details">
+                                <span id="excel-filename" class="preview-filename"></span>
+                                <span id="excel-filesize" class="preview-filesize"></span>
+                            </div>
+                            <button type="button" id="clear-excel-btn" class="btn-clear-media" title="Batal pilih file Excel">✕</button>
+                        </div>
+                        <div class="helper-text">Pastikan Excel memiliki kolom: <b>PhoneNumber</b> dan <b>Message</b>. (Kolom <b>image</b> opsional).</div>
+
+                        <label for="bulk-image-file">Gambar Seragam untuk Semua Pesan (Opsional)</label>
+                        <div class="file-wrapper">
+                            <input type="file" id="bulk-image-file" name="image" accept="image/jpeg,image/png,image/webp">
+                        </div>
+
+                        <!-- Preview Box Bulk Image -->
+                        <div id="bulk-image-preview-box" class="preview-box" style="display: none;">
+                            <img id="bulk-image-thumb" class="preview-thumb" src="" alt="Thumbnail">
+                            <div class="preview-details">
+                                <span id="bulk-image-name" class="preview-filename"></span>
+                                <span id="bulk-image-size" class="preview-filesize"></span>
+                            </div>
+                            <button type="button" id="clear-bulk-image-btn" class="btn-clear-media" title="Batal upload gambar (Hapus gambar)">✕</button>
+                        </div>
+
+                        <div class="helper-text">Jika diisi, gambar ini akan dikirimkan ke seluruh nomor pada Excel.</div>
+
+                        <button type="submit" id="send-bulk-message-btn">Kirim Pesan Massal</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
