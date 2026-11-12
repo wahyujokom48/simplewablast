@@ -1,0 +1,183 @@
+/* Reset margin dan padding agar tampilan lebih konsisten */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Container utama */
+.container {
+    width: 85%;
+    max-width: 1200px;  /* Menambahkan lebar maksimum */
+    margin: 0 auto;
+    padding: 3rem;
+    text-align: center;
+    background-color: #fff;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading */
+h1 {
+    font-size: 2.5rem;
+    color: #4CAF50;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* QR Container */
+#qr-container {
+    margin-bottom: 3rem;
+    background: linear-gradient(45deg, #4CAF50, #81C784);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#qr-container h3 {
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+#qr-code {
+    border: 5px solid #fff;
+    border-radius: 1.5rem;
+    box-shadow: 0 0 1.5rem rgba(0, 128, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+#qr-code:hover {
+    transform: scale(1.1);
+}
+
+/* Form Container */
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+/* Form Column Styling */
+.form-column {
+    width: 45%;
+    background-color: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.form-column:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.form-column h3 {
+    font-size: 1.625rem;
+    color: #388E3C;
+    margin-bottom: 1.5rem;
+}
+
+/* Input Fields */
+input[type="text"],
+textarea,
+input[type="file"] {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+    border: 2px solid #ddd;
+    border-radius: 0.75rem;
+    font-size: 1.1rem;
+    transition: border-color 0.3s ease;
+}
+
+/* Focus state for input fields */
+input[type="text"]:focus,
+textarea:focus,
+input[type="file"]:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+/* Textarea resizing and styles */
+textarea {
+    resize: vertical;
+    min-height: 8rem;
+}
+
+/* Label styling */
+label {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+    display: inline-block;
+}
+
+/* Submit Button */
+button[type="submit"] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 1.25rem;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Submit button hover effect */
+button[type="submit"]:hover {
+    background-color: #388E3C;
+    transform: scale(1.05);
+}
+
+/* Disabled button state */
+button[type="submit"]:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Styling for file input */
+input[type="file"] {
+    padding: 0.875rem;
+}
+
+/* Inactive Form (Hidden by default) */
+#message-form {
+    display: block;
+}
+
+/* Responsive Layout for smaller screens */
+@media (max-width: 768px) {
+    .form-container {
+        flex-direction: column;
+        align-items: center; /* Ensure the columns center properly */
+    }
+
+    .form-column {
+        width: 90%; /* Mengubah lebar form pada layar kecil */
+        margin: 1.5rem 0;
+    }
+
+    h1 {
+        font-size: 2rem; /* Mengubah ukuran font judul di layar kecil */
+    }
+
+    #qr-container {
+        padding: 1.5rem; /* Adjust QR container padding */
+    }
+
+    #qr-container h3 {
+        font-size: 1.25rem; /* Adjust text size */
+    }
+
+    button[type="submit"] {
+        font-size: 1.125rem; /* Mengurangi ukuran font tombol pada layar kecil */
+        padding: 1rem; /* Adjust padding */
+    }
+}
